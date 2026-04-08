@@ -874,7 +874,6 @@ export const US_STATES: StateCompliance[] = [
       recordkeepingYears: 2,
       additionalNotes: "Maine has significant restrictions on pesticide applications near water bodies. Blueberry operations have specific IPM requirements.",
     },
-    biosecurityRequiriances: ["Health certificates for livestock imports", "Aquaculture operations require DMR permits and disease reporting", "Organic operations must comply with NOP standards"],
     biosecurityRequirements: ["Health certificates for livestock imports", "Aquaculture operations require DMR permits and disease reporting", "Organic operations must comply with NOP standards"],
     keyStatutes: ["7 M.R.S. § 1311 (Animal Health)", "7 M.R.S. § 601 (Pesticides)"],
     federalPrograms: FEDERAL_PROGRAMS,
