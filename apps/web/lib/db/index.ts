@@ -20,16 +20,21 @@ declare global {
   var _db: Db | undefined
 }
 
-// Lazy proxy — defers DB connection until first use.
-// This prevents Next.js from crashing during static build
-// when DATABASE_URL is not available at compile time.
-export const db: Db = new Proxy({} as Db, {
-  get(_target, prop) {
-    if (!globalThis._db) {
-      globalThis._db = createDb()
-    }
-    const val = (globalThis._db as Record<string | symbol, unknown>)[prop]
-    return typeof val === "function" ? val.bind(globalThis._db) : val
+function getDb(): Db {
+  if (!globalThis._db) {
+    globalThis._db = createDb()
+  }
+  return globalThis._db
+}
+
+// Lazy proxy — defers DB connection until first use so Next.js static build
+// does not crash when DATABASE_URL is absent at compile time.
+export const db = new Proxy({} as Db, {
+  get(_target, prop: string | symbol) {
+    const instance = getDb()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const val = (instance as any)[prop]
+    return typeof val === "function" ? (val as (...args: unknown[]) => unknown).bind(instance) : val
   },
 })
 
