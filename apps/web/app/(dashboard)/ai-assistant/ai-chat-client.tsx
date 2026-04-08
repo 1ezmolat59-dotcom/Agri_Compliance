@@ -23,8 +23,7 @@ export function AiChatClient({ stateAbbreviation, farmType, farmName }: Props) {
   const bottomRef = useRef<HTMLDivElement>(null)
   const [inputValue, setInputValue] = useState("")
 
-  // AI SDK v6 useChat API
-  const { messages, sendMessage, status, append } = useChat({
+  const { messages, append, isLoading } = useChat({
     api: "/api/chat",
     body: { stateAbbreviation, farmType, farmName },
     initialMessages: [
@@ -32,12 +31,9 @@ export function AiChatClient({ stateAbbreviation, farmType, farmName }: Props) {
         id: "welcome",
         role: "assistant",
         content: `Hello! I'm your AgriGuard AI Compliance Assistant. I'm here to help you understand agricultural regulations${stateAbbreviation !== "US" ? ` specific to ${stateAbbreviation}` : ""} and best biosecurity practices${farmType !== "mixed" ? ` for ${farmType} operations` : ""}.\n\nWhat compliance question can I help you with today?`,
-        parts: [{ type: "text" as const, text: `Hello! I'm your AgriGuard AI Compliance Assistant.` }],
       },
     ],
   })
-
-  const isLoading = status === "streaming" || status === "submitted"
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -45,12 +41,12 @@ export function AiChatClient({ stateAbbreviation, farmType, farmName }: Props) {
 
   function handleSend() {
     if (!inputValue.trim() || isLoading) return
-    sendMessage({ text: inputValue.trim() })
+    append({ role: "user", content: inputValue.trim() })
     setInputValue("")
   }
 
   function handleSuggestion(text: string) {
-    sendMessage({ text })
+    append({ role: "user", content: text })
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -78,11 +74,7 @@ export function AiChatClient({ stateAbbreviation, farmType, farmName }: Props) {
                   : "bg-gray-50 text-gray-800 rounded-tl-sm border border-gray-100"
               }`}
             >
-              {msg.parts?.map((part, i) =>
-                part.type === "text" ? (
-                  <p key={i} className="whitespace-pre-wrap">{part.text}</p>
-                ) : null
-              ) ?? <p className="whitespace-pre-wrap">{msg.content}</p>}
+              <p className="whitespace-pre-wrap">{msg.content}</p>
             </div>
             {msg.role === "user" && (
               <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center shrink-0 mt-0.5">

@@ -1,10 +1,15 @@
 import { streamText } from "ai"
+import { createAnthropic } from "@ai-sdk/anthropic"
 import { getServerSession } from "next-auth"
 import { NextRequest } from "next/server"
 import { authOptions } from "@/lib/auth"
 import { getStateByAbbreviation } from "@agriguard/compliance-data"
 
 export const maxDuration = 60
+
+const anthropic = createAnthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY ?? "",
+})
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions)
@@ -50,16 +55,10 @@ IMPORTANT DISCLAIMERS TO INCLUDE:
 - You are not a licensed attorney or veterinarian — always recommend consulting qualified professionals for complex situations`
 
   const result = streamText({
-    model: "anthropic/claude-sonnet-4.6",
+    model: anthropic("claude-sonnet-4-6"),
     system: systemPrompt,
     messages,
-    providerOptions: {
-      gateway: {
-        tags: ["feature:ai-assistant", "app:agriguard"],
-        user: session.user.id,
-      },
-    },
   })
 
-  return result.toUIMessageStreamResponse()
+  return result.toDataStreamResponse()
 }
