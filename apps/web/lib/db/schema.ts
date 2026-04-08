@@ -204,6 +204,10 @@ export const streaksRelations = relations(streaks, ({ one }) => ({
   farm: one(farms, { fields: [streaks.farmId], references: [farms.id] }),
 }))
 
+export const visitorLogRelations = relations(visitorLog, ({ one }) => ({
+  farm: one(farms, { fields: [visitorLog.farmId], references: [farms.id] }),
+}))
+
 // ── Types ─────────────────────────────────────────────────────────────
 
 export type User = typeof users.$inferSelect
