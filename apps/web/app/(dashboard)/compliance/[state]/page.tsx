@@ -14,16 +14,7 @@ import {
 } from "lucide-react"
 import { getStateByAbbreviation } from "@agriguard/compliance-data"
 
-export async function generateStaticParams() {
-  const abbrs = [
-    "AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA",
-    "HI","ID","IL","IN","IA","KS","KY","LA","ME","MD",
-    "MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ",
-    "NM","NY","NC","ND","OH","OK","OR","PA","RI","SC",
-    "SD","TN","TX","UT","VT","VA","WA","WV","WI","WY",
-  ]
-  return abbrs.map((state) => ({ state }))
-}
+export const dynamic = "force-dynamic"
 
 export async function generateMetadata({ params }: { params: Promise<{ state: string }> }) {
   const { state } = await params
